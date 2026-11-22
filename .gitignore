@@ -1,0 +1,34 @@
+# Credentials and local runtime configuration
+.env
+.env.*
+!.env.example
+*.session
+*.session-journal
+*cookie*.txt
+*token*.txt
+secrets.json
+config.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Local media, temp files and logs
+*.log
+rednote-server.out.log
+rednote-server.err.log
+downloads/
+output/
+temp/
+*.mp4
+*.mkv
+*.webm
+*.mov
+*.part
