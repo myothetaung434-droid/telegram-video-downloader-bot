@@ -1,0 +1,73 @@
+# Changelog
+
+## v0.2.27 - 2026-09-25
+
+- Fall back to a mobile User-Agent when the Xiaohongshu note page redirects the desktop flow to the login page (recently applied to `/discovery/item/` video notes); the mobile web renders the same note anonymously, so `xhslink.cn/o/...` share links resolve again.
+
+## v0.2.26 - 2026-09-16
+
+- Refresh the bundled `jiji262/douyin-downloader` vendor snapshot to upstream HEAD, picking up the 2026-09 Argus gate fixes for the `aweme/detail` endpoint (Douyin now rejects unsigned and cookieless requests with an empty 200, which surfaced as "missing aweme_detail").
+- Add a server-side Douyin Cookie setting to the web UI settings tab. The saved cookie is persisted in the app config, masked in API responses, and used for Douyin downloads with precedence request cookie > saved cookie > `DOUYIN_COOKIE` env.
+
+## v0.2.25 - 2026-07-23
+
+- Add Huawei and Baidu CDN fallbacks for supported high-resolution Xiaohongshu image URLs.
+- Remove obsolete Chrome cookie reader code and temporary implementation notes.
+
+## v0.2.24 - 2026-07-23
+
+- Accept `xhslink.cn` and `www.xhslink.cn` Xiaohongshu short links.
+
+## v0.2.23 - 2026-05-10
+
+- Bundle `jiji262/douyin-downloader` REST mode into the Docker image for one-container Douyin server-side downloads.
+- Start the internal Douyin downloader on `127.0.0.1:8000` by default and route Douyin server downloads to `/data/downloads/douyin`.
+- Add `DOUYIN_INTERNAL_DOWNLOADER_ENABLED` and `DOUYIN_INTERNAL_DOWNLOADER_PORT` for Unraid/Docker deployments while preserving external downloader override support.
+- Update Docker Hub, compose, and Unraid documentation for persistent `DOUYIN_COOKIE` usage without baking cookies into the image.
+
+## v0.2.22 - 2026-05-10
+
+- Add a dedicated `DOUYIN_COOKIE` environment variable for Unraid/Docker deployments.
+- Split the web UI Cookie auth controls into separate Xiaohongshu and Douyin Cookie fields.
+- Keep the legacy `cookie` request field as a backward-compatible fallback while adding `xhsCookie` and `douyinCookie`.
+
+## v0.2.21 - 2026-05-10
+
+- Add Douyin single-video resolve/download support for share text, short links, and `douyin.com/video/{aweme_id}` inputs.
+- Add optional external `jiji262/douyin-downloader` REST integration for Douyin server-side downloads without baking cookies into the image.
+- Remove the Agent / OpenClaw / MCP integration UI, routes, config blocks, and server scripts.
+- Update Docker/Unraid compose examples and Docker Hub docs for the simplified web + Telegram workflow.
+
+## v0.2.20 - 2026-04-12
+
+- Replace the OpenClaw-only setup surface with a unified Agent Integration dashboard that supports both OpenClaw and Hermes from the same UI.
+- Add shared integration config handling, Hermes template generation, richer diagnostics, and a browser target switcher that preserves unsaved drafts while regenerating snippets from the live form state.
+
+## v0.2.19 - 2026-03-25
+
+- When Telegram rejects a media upload with `Request Entity Too Large`, fall back to sending direct download links instead of reporting the whole resolve as failed.
+
+## v0.2.18 - 2026-03-22
+
+- Change Telegram polling to acknowledge updates after each message is processed, so a failed later reply no longer causes the rest of that batch to be skipped on restart.
+- Let Telegram uploads retry the media item's fallback URLs, matching the existing proxy and server-side download behavior when the preferred CDN link fails.
+- Make server-side downloads use the media-specific request timeout by default, so `/api/resolve` with `download=true` is no longer stricter than `/api/media` or Telegram uploads.
+
+## v0.2.17 - 2026-03-21
+
+- Let the OpenClaw service base URL stay blank in saved config so the dashboard, diagnostics, and resolve payloads automatically follow the current request origin. This makes reverse proxies, alternate local ports, and temporary sidecar instances work without hand-editing the service URL.
+- Move shared media filename generation into a neutral server/client module so browser proxy downloads, server-side downloads, Telegram uploads, and OpenClaw proxy links all use the same predictable naming logic.
+- Add retries for transient media stream disconnects plus cleanup of partial files, so upstream CDN hiccups are less likely to leave failed downloads or truncated leftovers on disk.
+- Expand automated validation with syntax checks, Node 20/22 CI coverage, config/HTTP integration tests for OpenClaw auto-origin behavior, and static-module serving tests for the browser filename helper.
+
+## v0.2.16 - 2026-03-20
+
+- Unify media filename generation across server downloads, browser proxy downloads, Telegram uploads, and OpenClaw proxy links so the same post resolves to the same predictable file names everywhere.
+- Add configurable batch resolve and per-post media download concurrency to speed up larger workloads without losing output order.
+- Refactor the HTTP server into a reusable app factory and add integration tests for admin auth, CORS, batch resolve concurrency, config persistence, and media proxy fallback behavior.
+- Add a dedicated GitHub Actions test workflow so `npm test` now runs automatically on pushes to `main` and on pull requests.
+
+## v0.2.15 - 2026-03-20
+
+- Fix X/Twitter multi-video download filename collisions so files from the same post no longer overwrite each other during server-side downloads. Multi-video posts now save as indexed files such as `_01`, `_02`, and `_03`, and the web UI uses the same naming for proxy downloads.
+- Start tracking upcoming release notes in `CHANGELOG.md` and reference the `Unreleased` section from the README release workflow.
