@@ -1,14 +1,25 @@
 # Telegram Video Downloader Bot
 
-> **Status: source import incomplete — do not deploy.** The audited ZIP source has not yet been transferred into this repository. This branch adds safeguards and a CI gate that deliberately fails rather than falsely reporting that the bot is ready.
+Windows one-click Telegram video downloader with RedNote/Xiaohongshu download service and Telegram channel join verification.
 
-## Scope
-- Telegram getUpdates, required channel membership and real video delivery.
-- RedNote download recovery for terminated, ReadTimeout, and aborted connections.
-- Windows startup launcher.
+## Installation (Windows)
+1. Install **Node.js 20+** and **Python 3**.
+2. Download the repository ZIP or clone this repository.
+3. Run `START_HERE.cmd` from the project folder.
+4. Enter your **BotFather bot token only in the local terminal**, when requested. Do not post it to GitHub or this chat.
+5. Keep the terminal running and send a supported video link to your Telegram bot.
 
-## Security
-This repository is **public**. Never commit Telegram bot tokens, session files or cookies. Set BOT_TOKEN through a local environment variable. The .gitignore protects common local secrets but does not replace a secret scan.
+The launcher uses a loopback local downloader server and the Python Telegram polling bot. Edit `channel.txt` to set the public channel username if necessary. See `READ_FIRST_MM.txt` and `README_LAPTOP_MM.md` for Burmese instructions.
 
-## Verification
-The attached local archive passed 7 Python and 96 JavaScript tests in a separate runtime. Live Telegram delivery was not verified. GitHub CI intentionally blocks until source files bot.py and rednote-downloader/ are imported, and must pass before merge.
+## Tests
+- `python -m pip install requests`
+- `python -m unittest -v test_bot`
+- `cd rednote-downloader && npm run check:syntax && npm test`
+
+Local checks performed for the imported archive: **7/7 Python tests**, **96/96 JavaScript tests** and **13 JavaScript syntax files passed**. GitHub Actions checks are configured independently.
+
+## Current validation boundary
+**Real Telegram video delivery is not yet verified.** Passing offline tests does not confirm that RedNote's live site/CDNs, account restrictions, Telegram channel permissions, or the bot's remote upload work. Verify with a real authorized bot/account and a test video before declaring production readiness.
+
+## Safety
+This repository is **public**. Never commit `BOT_TOKEN`, cookies, session files, or private downloaded video files. They are not required for review or offline unit tests.
