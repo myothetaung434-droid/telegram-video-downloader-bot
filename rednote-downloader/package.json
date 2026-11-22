@@ -1,0 +1,16 @@
+{
+  "name": "rednote-downloader-service",
+  "version": "0.2.27",
+  "private": true,
+  "type": "module",
+  "description": "A Docker-first self-hosted downloader for RedNote/Xiaohongshu, X/Twitter, and Douyin single videos, with a web UI and Telegram delivery.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "check:syntax": "node scripts/check-syntax.js",
+    "test": "node --test"
+  }
+}
