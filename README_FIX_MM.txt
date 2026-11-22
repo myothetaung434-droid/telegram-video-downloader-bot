@@ -1,0 +1,1 @@
+RedNote stream retry fix: handles The operation was aborted as retryable; stream timeout >=120s instead of 25s. Existing local API port 3107. This is not proof that RedNote CDN is accessible. Do not upload secrets.
