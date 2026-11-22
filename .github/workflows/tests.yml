@@ -1,0 +1,32 @@
+name: Telegram Bot Tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run Python tests
+        run: |
+          if [ -f test_bot.py ]; then python -m unittest discover -p 'test_bot.py' -v; else echo 'No Python test files yet'; fi
+  javascript-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run JavaScript tests
+        run: |
+          if [ -f rednote-downloader/package.json ]; then
+            cd rednote-downloader
+            npm test
+          else
+            echo 'No JavaScript project files yet'
+          fi
