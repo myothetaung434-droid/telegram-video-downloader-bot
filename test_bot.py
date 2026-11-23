@@ -65,6 +65,49 @@ class BotTest(unittest.TestCase):
                     self.bot.upload_file(99, {'absolutePath': str(file_path)})
                 self.assertEqual(request.call_count, 1)
 
+    def test_polling_does_not_acknowledge_failed_update(self):
+        updates = [{'update_id': 10, 'message': {'text': '/start'}},
+                   {'update_id': 11, 'message': {'text': '/start'}}]
+        handled = []
+        def call(method, **data):
+            if method == 'getMe':
+                return {'username': 'testbot'}
+            if method == 'getUpdates':
+                if len(handled) >= 3:
+                    raise KeyboardInterrupt()
+                return updates
+            raise AssertionError(method)
+        def process(update):
+            handled.append(update['update_id'])
+            if len(handled) == 1:
+                raise RuntimeError('temporary delivery failure')
+        self.bot.call = call
+        self.bot.process = process
+        with patch.object(bot.time, 'sleep'):
+            self.bot.run()
+        self.assertEqual(handled, [10, 10, 11])
+        self.assertEqual(self.bot.offset, 12)
+
+    def test_polling_stops_batch_on_failure(self):
+        updates = [{'update_id': 20}, {'update_id': 21}]
+        handled = []
+        def call(method, **data):
+            if method == 'getMe':
+                return {'username': 'testbot'}
+            if method == 'getUpdates':
+                if handled:
+                    raise KeyboardInterrupt()
+                return updates
+            raise AssertionError(method)
+        def process(update):
+            handled.append(update['update_id'])
+            raise RuntimeError('failure')
+        self.bot.call = call
+        self.bot.process = process
+        self.bot.run()
+        self.assertEqual(handled, [20])
+        self.assertEqual(self.bot.offset, 0)
+
     def test_token_validation(self):
         with self.assertRaises(ValueError):
             bot.Bot('\x1b[200~123:secret', '@FreeShareMM')
