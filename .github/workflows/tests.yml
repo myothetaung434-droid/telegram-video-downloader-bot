@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install Python runtime dependencies
+        run: python -m pip install requests
       - name: Verify and run Python tests
         run: |
           test -f bot.py || { echo 'Missing bot.py'; exit 1; }
@@ -29,4 +31,5 @@ jobs:
         working-directory: rednote-downloader
         run: |
           test -f package.json || { echo 'Missing downloader package.json'; exit 1; }
+          npm run check:syntax
           npm test
