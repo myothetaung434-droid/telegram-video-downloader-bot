@@ -160,11 +160,15 @@ class Bot:
             try:
                 updates = self.call("getUpdates", offset=self.offset, timeout=10)
                 for update in updates:
-                    self.offset = update["update_id"] + 1
                     try:
                         self.process(update)
                     except Exception as exc:
+                        # Stop this batch without acknowledging a failed update.
+                        # Advancing the offset first would silently lose messages.
                         print(f"Update failed: {type(exc).__name__}: {str(exc).replace(self.token, '[TOKEN]')[:200]}", flush=True)
+                        break
+                    else:
+                        self.offset = update["update_id"] + 1
             except KeyboardInterrupt:
                 print("Bot stopped", flush=True)
                 return
