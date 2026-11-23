@@ -1,0 +1,29 @@
+# Credentials and runtime secrets
+.env
+.env.*
+!.env.example
+*.session
+*.session-journal
+*cookie*.json
+*cookie*.txt
+*token*.txt
+*.key
+*.pem
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+# Node
+node_modules/
+npm-debug.log*
+# Downloaded media and temp files
+downloads/
+tmp/
+temp/
+*.part
+*.download
+# Local OS files
+.DS_Store
+Thumbs.db

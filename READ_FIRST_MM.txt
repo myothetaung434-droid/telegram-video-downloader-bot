@@ -1,0 +1,12 @@
+TELEGRAM VIDEO DOWNLOADER - WINDOWS
+
+1. ZIP ကို Extract All လုပ်ပါ။
+2. Extract လုပ်ထားသော Folder ထဲမှ START_HERE.cmd ကို Double-click နှိပ်ပါ။
+3. Telegram BotFather မှ ပြန်လည်ထုတ်ထားသော Bot Token ကို တောင်းသည့်အခါသာ ထည့်ပါ။ Token ကို ဤ chat သို့ မပို့ပါနှင့်။
+4. Windows Terminal ထဲတွင် Bot လည်နေသရွေ့ Telegram တွင် @FreeVideoDownloaderMM_bot သို့ Video Link ပို့ပြီး စမ်းနိုင်ပါသည်။
+
+လိုအပ်ချက်: Windows, Node.js 20+, Python 3, Internet.
+ရှိပြီးသား Channel @FreeShareMM ကို ကြိုတင်သတ်မှတ်ထားသည်။ Channel Username ကွဲလျှင် channel.txt ပြင်ပါ။
+Token ကို ပုံတွင် ဖော်ပြခဲ့ဖူးပါက BotFather မှ Revoke လုပ်ပြီး အသစ်ထုတ်ပါ။
+
+အရေးကြီး: Offline tests အောင်မြင်ထားပေမဲ့ RedNote Live Video Download အောင်မြင်ကြောင်း မအတည်ပြုနိုင်သေးပါ။ RedNote login/CDN ကန့်သတ်မှုများကြောင့် Download မရနိုင်ပါ။
