@@ -1,0 +1,109 @@
+# RedNote Downloader Service
+
+[中文](README.md) | [English](README.en.md)
+
+A Docker / Unraid friendly self-hosted media downloader for RedNote/Xiaohongshu, `x.com` / `twitter.com`, and Douyin single-video links or share text. It provides a web UI, browser preview, local proxy downloads, server-side saving, and optional Telegram delivery.
+
+Starting with `v0.2.23`, the Docker image bundles the REST mode of `jiji262/douyin-downloader`. Douyin single-video resolving and server-side downloading work inside one container, without running a separate Python downloader.
+
+## Highlights
+
+- RedNote / Xiaohongshu: resolve share text, `xhslink.com` / `xhslink.cn` short links, and page URLs.
+- X / Twitter: resolve post images and videos, then download through the local proxy.
+- Douyin: resolve single-video share text, short links, and `douyin.com/video/{aweme_id}` URLs; Docker images include a bundled downloader by default.
+- Web UI: paste a link, preview images/videos, download through the browser proxy, or save server-side.
+- Telegram: optionally deliver resolved media to chats through a bot.
+- Unraid / Docker: persist config and downloads under `/data`; keep `XHS_COOKIE` and `DOUYIN_COOKIE` separate at runtime, never baked into the image.
+
+## Boundaries
+
+- Douyin support is single-video only. Gallery posts, profiles, collections, music pages, favorites, live streams, and profile batch downloads are not included.
+- "No watermark" means the service prefers no-watermark or low-watermark sources returned by the platform. If only a suspicious candidate is available, the service returns a warning and still allows download.
+- The service does not transcode, recompress, crop, or remove watermarks with ffmpeg/OpenCV.
+- If a target site returns an anti-bot page, captcha, or no usable media URL, the service fails fast.
+- Docker images bundle the REST mode of `jiji262/douyin-downloader` for server-side Douyin downloads. Cookies are only passed at runtime through the web UI or environment variables, never baked into the image.
+
+## Quick Start
+
+```bash
+npm test
+npm start
+```
+
+Open:
+
+```text
+http://127.0.0.1:3000/
+```
+
+Docker Hub:
+
+```bash
+docker compose -f compose.hub.yaml up -d
+```
+
+## Bundled Douyin Downloader
+
+Docker images start a bundled `jiji262/douyin-downloader` REST service inside the same container on `127.0.0.1:8000`. Douyin server-side downloads use it by default. Its default output directory is:
+
+```text
+/data/downloads/douyin
+```
+
+On Unraid with the sample compose file, this maps to:
+
+```text
+/mnt/user/appdata/rednote/downloads/douyin
+```
+
+Cookie input options:
+
+- Use the web UI "Douyin Cookie" field for the current request.
+- Set `DOUYIN_COOKIE=...` in your Unraid Docker template or compose `.env` for a persistent default.
+
+Do not bake cookies into the image. Do not mix `XHS_COOKIE` and `DOUYIN_COOKIE`; they are platform-specific.
+
+To disable the bundled downloader:
+
+```bash
+DOUYIN_INTERNAL_DOWNLOADER_ENABLED=false
+```
+
+To use a separate external `jiji262/douyin-downloader` REST service instead:
+
+```bash
+DOUYIN_INTERNAL_DOWNLOADER_ENABLED=false
+DOUYIN_DOWNLOADER_BASE_URL=http://host.docker.internal:8000
+DOUYIN_DOWNLOADER_OUTPUT_DIR=/path/to/douyin-downloader/Downloaded
+```
+
+## Environment Variables
+
+- `HOST`: bind address, default `0.0.0.0` in Docker.
+- `PORT`: service port, default `3000`.
+- `DOWNLOAD_DIR`: download directory, default `/data/downloads`.
+- `APP_CONFIG_PATH`: app config path, default `/data/config/.rednote-config.json`.
+- `APP_STATE_PATH`: Telegram polling state path, default `/data/config/.rednote-state.json`.
+- `REDNOTE_DATA_DIR`: compose-only host path mounted to `/data`.
+- `PUID` / `PGID`: runtime uid/gid used by the container entrypoint.
+- `XHS_COOKIE`: optional manual Cookie header for protected RedNote posts.
+- `DOUYIN_COOKIE`: optional manual Cookie header for protected Douyin single-video resolving or bundled/external Douyin downloads.
+- `XHS_USER_AGENT`: optional custom request user agent.
+- `DOUYIN_INTERNAL_DOWNLOADER_ENABLED`: optional; Docker default is `true`. Set to `false` / `0` / `no` / `off` to disable the bundled Douyin downloader.
+- `DOUYIN_INTERNAL_DOWNLOADER_PORT`: optional bundled downloader port inside the container, default `8000`.
+- `DOUYIN_DOWNLOADER_BASE_URL`: optional external Douyin downloader REST URL; in bundled mode it defaults to `http://127.0.0.1:8000`.
+- `DOUYIN_DOWNLOADER_OUTPUT_DIR`: optional downloader output directory; in bundled mode it defaults to `/data/downloads/douyin`.
+- `DOUYIN_DOWNLOADER_TIMEOUT_MS`: optional external job timeout, default 10 minutes.
+- `DOUYIN_DOWNLOADER_POLL_INTERVAL_MS`: optional external job poll interval, default 1500ms.
+- `TELEGRAM_ENABLED`: optional; set to `false` / `0` to disable the Telegram polling bot.
+- `TELEGRAM_BOT_TOKEN`: optional Telegram bot token.
+- `TELEGRAM_ALLOWED_CHAT_IDS`: optional allowlist of chat ids.
+- `TELEGRAM_DELIVERY_MODE`: `document` or `preview`.
+- `REDNOTE_ADMIN_TOKEN`: optional admin token required by protected management endpoints.
+- `CORS_ALLOWED_ORIGINS`: optional comma-separated list of extra allowed origins.
+
+## Documentation
+
+- Full Chinese documentation: [README.md](README.md)
+- Docker Hub deployment guide: [DOCKER_HUB_README.en.md](DOCKER_HUB_README.en.md)
+- Releases: [GitHub Releases](https://github.com/icekale/rednote-downloader/releases)
